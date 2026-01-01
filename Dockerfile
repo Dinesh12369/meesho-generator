@@ -1,18 +1,18 @@
 FROM php:8.2-cli
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libcurl4-openssl-dev \
     zip \
     unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install pdo pdo_mysql
+    && rm -rf /var/lib/apt/lists/*
 
-# Enable required extensions
-RUN docker-php-ext-install curl
+# Configure and install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd
 
 # Set working directory
 WORKDIR /app
@@ -20,7 +20,7 @@ WORKDIR /app
 # Copy application files
 COPY . /app
 
-# Create necessary directories
+# Create necessary directories with proper permissions
 RUN mkdir -p /app/data/generated /app/assets/discount_tags \
     && chmod -R 777 /app/data
 
