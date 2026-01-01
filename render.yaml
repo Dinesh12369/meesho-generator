@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: meesho-image-generator
+    env: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: PHP_VERSION
+        value: "8.2"
+    buildCommand: |
+      apt-get update
+      apt-get install -y php8.2 php8.2-cli php8.2-curl php8.2-gd php8.2-mbstring php8.2-xml php8.2-zip
+    startCommand: php -S 0.0.0.0:$PORT
